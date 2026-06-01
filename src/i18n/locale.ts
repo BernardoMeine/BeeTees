@@ -151,6 +151,7 @@ export type TranslationKey =
   | "checkoutDonationCustom"
   | "checkoutPlaceOrder"
   | "checkoutErrorNameRequired"
+  | "checkoutErrorNameInvalid"
   | "checkoutErrorEmailRequired"
   | "checkoutErrorEmailInvalid"
   | "checkoutErrorZipRequired"

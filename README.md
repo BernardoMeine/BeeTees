@@ -77,7 +77,7 @@ database/migrate.mjs
 database/seed.mjs
 database/seeds/products.json
 database/seeds/promos.json
-database/seeds/translations.json
+database/seeds/translations.json 
 package.json
 ```
 

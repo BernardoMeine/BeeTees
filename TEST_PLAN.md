@@ -552,6 +552,17 @@ Assert using `.cart-drawer__empty` visibility rather than hardcoded text when th
 
 ---
 
+### TC-06-20 — Full name with only special characters fails validation
+
+**Steps:**
+1. Fill name with `"%&%$%*&#@"`.
+2. Fill email and card fields correctly.
+3. Submit.
+
+**Expected:** `[data-testid="checkout-error-fullName"]` is visible with a format-error message.
+
+---
+
 ### TC-06-03 — Email must contain "@" and a domain with a dot
 
 **Steps:**
@@ -1170,6 +1181,616 @@ Assert using `.cart-drawer__empty` visibility plus badge class absence.
 4. Close the panel and read the menu heading and a product price.
 
 **Expected:** Menu heading reverts to `"Available to buy"` and prices are in USD format (`$X.XX`). The locale switched back to `en-US` on the US store resolution.
+
+---
+
+---
+
+## Suite 11 — Promo Banner
+
+> **Goal:** Verify that the rotating promo banner renders correctly and responds to user interaction (§2.3).
+
+---
+
+### TC-11-01 — Promo banner is visible on the shop page
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Navigate to `/`.
+2. Assert `[data-testid="promo-banner"]` is visible.
+
+**Expected:** The promo banner is rendered on the shop page.
+
+---
+
+### TC-11-02 — All three promo slides are rendered
+
+**Steps:**
+1. Navigate to `/`.
+2. Assert `[data-testid="promo-slide-combo"]`, `[data-testid="promo-slide-spicy"]`, and `[data-testid="promo-slide-delivery"]` exist in the DOM.
+
+**Expected:** All three slides are present.
+
+---
+
+### TC-11-03 — Navigation dots allow manual slide selection
+
+**Steps:**
+1. Navigate to `/`.
+2. Click the second navigation dot inside `[data-testid="promo-banner"]`.
+3. Assert the second slide is the active/visible one.
+
+**Expected:** Clicking a dot switches to the corresponding slide.
+
+---
+
+### TC-11-04 — Auto-rotation pauses on hover
+
+**Steps:**
+1. Navigate to `/`.
+2. Hover over `[data-testid="promo-banner"]`.
+3. Wait 6 seconds.
+4. Assert the current slide has not changed.
+
+**Expected:** The banner does not auto-advance while the user hovers over it.
+
+---
+
+## Suite 12 — Menu Search
+
+> **Goal:** Verify the collapsible search input filters products correctly and integrates with the category filter (§1.6).
+
+---
+
+### TC-12-01 — Search icon opens the input and focuses it
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Navigate to `/`.
+2. Assert `[data-testid="menu-search"]` is not visible.
+3. Click `[data-testid="menu-search-toggle"]`.
+4. Assert `[data-testid="menu-search"]` is visible and focused.
+
+**Expected:** Search field appears and receives focus on toggle click.
+
+---
+
+### TC-12-02 — Search filters products by localized name (case-insensitive)
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Open search, type `"cheese"`.
+2. Count visible product cards.
+
+**Expected:** Only products whose name contains "cheese" (case-insensitive) are shown. At minimum Cheeseburguer and Cheeseburguer Bacon should appear.
+
+---
+
+### TC-12-03 — Search narrows results within the active category filter
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Select category filter `"burger"` (4 results).
+2. Open search, type `"avocado"`.
+3. Count visible product cards.
+
+**Expected:** Only burger products matching "avocado" are shown — other categories are excluded.
+
+---
+
+### TC-12-04 — Empty state appears when no product matches search
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Open search, type `"xyznotaproduct"`.
+
+**Expected:** The menu shows the localized empty-state message and no product cards are visible.
+
+---
+
+### TC-12-05 — Closing the search input clears the query
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Open search, type `"cheese"` — confirm filtered results.
+2. Click `[data-testid="menu-search-close"]`.
+3. Count visible product cards.
+
+**Expected:** Search is closed, query is cleared, and all 16 products are shown again.
+
+---
+
+## Suite 13 — Product Customizer
+
+> **Goal:** Verify the item customizer dialog opens correctly, applies add-on pricing, and produces unique cart lines (§6).
+
+---
+
+### TC-13-01 — Clicking "Add to cart" with valid location opens the customizer dialog
+
+**Preconditions:** Valid delivery location saved.
+**Steps:**
+1. Click `[data-testid="add-to-cart"]` on any product.
+2. Assert `[data-testid="item-customizer"]` (or the customizer dialog) is visible.
+3. Assert the cart count has NOT changed yet.
+
+**Expected:** Customizer opens; product is not added until the user confirms.
+
+---
+
+### TC-13-02 — Customizer resets when a different product is opened
+
+**Preconditions:** Valid location saved.
+**Steps:**
+1. Open customizer for Cheeseburguer. Select 2 patties.
+2. Close the customizer (cancel).
+3. Open customizer for another product.
+4. Assert patty count is back to 1 and no extras are selected.
+
+**Expected:** Customizer state resets for each new product.
+
+---
+
+### TC-13-03 — Patty selector appears only for burger products
+
+**Preconditions:** Valid location saved.
+**Steps:**
+1. Open customizer for a burger (e.g. Cheeseburguer) — assert patty selector is visible.
+2. Cancel. Open customizer for a non-burger product (e.g. Pack of tenders) — assert patty selector is NOT visible.
+
+**Expected:** Patty selection is exclusive to the `"burger"` category.
+
+---
+
+### TC-13-04 — Selecting 2 patties adds $2.00 upcharge to displayed price
+
+**Preconditions:** Valid location saved; open customizer for a burger.
+**Steps:**
+1. Note the base price shown.
+2. Click the "2 patties" option.
+3. Read the updated unit price in the customizer.
+
+**Expected:** Unit price = base price + $2.00.
+
+---
+
+### TC-13-05 — Add-ons are category-specific
+
+**Preconditions:** Valid location saved.
+**Steps:**
+1. Open customizer for a burger — assert burger add-ons appear (e.g. "Extra cheese", "Bacon").
+2. Cancel. Open customizer for a drink — assert drink add-ons appear ("Large size", "No ice"), and burger add-ons are absent.
+
+**Expected:** Add-on list matches the product category as specified in §6.4.
+
+---
+
+### TC-13-06 — Grand line total updates as add-ons are selected
+
+**Preconditions:** Valid location saved; open customizer for any product.
+**Steps:**
+1. Note the initial line total (quantity 1).
+2. Select one add-on with a non-zero upcharge.
+3. Read the updated line total.
+
+**Expected:** Line total = (base price + add-on upcharge) × quantity.
+
+---
+
+### TC-13-07 — Two customized versions of the same product create separate cart lines
+
+**Preconditions:** Valid location saved.
+**Steps:**
+1. Add Cheeseburguer with default options.
+2. Add Cheeseburguer again with "Extra cheese" selected.
+3. Open cart drawer and count `[data-testid="cart-lines"] li` items.
+
+**Expected:** Two separate lines appear even though it is the same base product.
+
+---
+
+## Suite 14 — Tips & Donations
+
+> **Goal:** Verify tip and donation calculations and UI interactions on the checkout page (§9).
+
+---
+
+### TC-14-01 — Tip preset options are displayed on checkout
+
+**Preconditions:** Location saved; item in cart; on checkout page.
+**Steps:**
+1. Assert `[data-testid="tip-option-0"]`, `[data-testid="tip-option-10"]`, `[data-testid="tip-option-15"]`, `[data-testid="tip-option-20"]` are all visible.
+
+**Expected:** All four tip options are displayed.
+
+---
+
+### TC-14-02 — Selecting a tip updates the tip amount row
+
+**Preconditions:** On checkout page.
+**Steps:**
+1. Click `[data-testid="tip-option-10"]`.
+2. Assert `[data-testid="checkout-tip-amount"]` is visible.
+
+**Expected:** The tip amount row appears after a non-zero tip is selected.
+
+---
+
+### TC-14-03 — Tip amount equals subtotal × percentage ÷ 100
+
+**Preconditions:** On checkout page; known subtotal.
+**Steps:**
+1. Read the subtotal from `[data-testid="checkout-subtotal"]`.
+2. Select the 15% tip.
+3. Read `[data-testid="checkout-tip-amount"]`.
+
+**Expected:** Tip = subtotal × 0.15 (formatted with `formatPrice`).
+
+---
+
+### TC-14-04 — Donation fixed presets are displayed
+
+**Preconditions:** On checkout page.
+**Steps:**
+1. Assert `[data-testid="donation-fixed-1"]`, `[data-testid="donation-fixed-2"]`, `[data-testid="donation-fixed-5"]` are visible.
+
+**Expected:** Fixed donation preset buttons (1, 2, 5 currency units) are shown.
+
+---
+
+### TC-14-05 — Donation percent presets are displayed
+
+**Preconditions:** On checkout page.
+**Steps:**
+1. Assert `[data-testid="donation-percent-1"]`, `[data-testid="donation-percent-2"]`, `[data-testid="donation-percent-5"]` are visible.
+
+**Expected:** Percent donation preset buttons (1%, 2%, 5%) are shown.
+
+---
+
+### TC-14-06 — Custom fixed donation amount updates the donation row
+
+**Preconditions:** On checkout page.
+**Steps:**
+1. Type `"3"` into `[data-testid="donation-custom-fixed"]`.
+2. Assert `[data-testid="checkout-donation-amount"]` is visible.
+
+**Expected:** The donation amount row appears with a non-zero donation.
+
+---
+
+### TC-14-07 — Grand total equals subtotal + tip + donation
+
+**Preconditions:** On checkout page; known subtotal.
+**Steps:**
+1. Select 10% tip.
+2. Click `[data-testid="donation-fixed-1"]`.
+3. Read `[data-testid="checkout-subtotal"]`, `[data-testid="checkout-tip-amount"]`, `[data-testid="checkout-donation-amount"]`, and `[data-testid="checkout-total"]`.
+
+**Expected:** Grand total = subtotal + tip amount + $1.00 donation (all in active currency).
+
+---
+
+### TC-14-08 — "No donation" resets donation row to zero
+
+**Preconditions:** On checkout page; a donation preset has been selected.
+**Steps:**
+1. Select `[data-testid="donation-fixed-2"]`.
+2. Click `[data-testid="donation-none"]`.
+3. Assert `[data-testid="checkout-donation-amount"]` is not visible.
+
+**Expected:** Donation row disappears and grand total reverts to subtotal + tip.
+
+---
+
+### TC-14-09 — Donation displays in BRL when BR locale is active **[Locale-aware]**
+
+**Preconditions:** BR location saved; on checkout page.
+**Steps:**
+1. Click `[data-testid="donation-fixed-1"]`.
+2. Read `[data-testid="checkout-donation-amount"]`.
+
+**Expected:** Donation amount is displayed as `R$5,70` (1 USD × 5.7 conversion formatted as BRL).
+
+---
+
+## Suite 15 — Authentication
+
+> **Goal:** Verify signup, login, profile management, previous orders, reorder prompt and logout flows (§5).
+
+---
+
+### TC-15-01 — Guest can complete full checkout without an account
+
+**Preconditions:** Fresh session, no signup.
+**Steps:**
+1. Save a valid location, add a product, navigate to checkout.
+2. Fill all fields, place order.
+3. Assert `[data-testid="confirmation-page"]` is visible.
+
+**Expected:** Guest checkout succeeds and shows the confirmation page.
+
+---
+
+### TC-15-02 — Signup requires a valid deliverable location
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Navigate to the signup page.
+2. Fill all fields but enter an unresolvable ZIP (e.g. `99999`).
+3. Attempt to submit.
+
+**Expected:** Signup is blocked and an error is shown for the ZIP / store field.
+
+---
+
+### TC-15-03 — Signup validates all required fields
+
+**Preconditions:** On signup page.
+**Steps:**
+1. Submit without filling any field.
+
+**Expected:** Errors appear for: first name, last name, email, password, confirm password, country/ZIP.
+
+---
+
+### TC-15-04 — Signup password must be at least 8 characters
+
+**Preconditions:** On signup page.
+**Steps:**
+1. Fill all fields correctly but set password to `"short"` (5 chars).
+2. Submit.
+
+**Expected:** Password error is shown.
+
+---
+
+### TC-15-05 — Signup password and confirm password must match
+
+**Preconditions:** On signup page.
+**Steps:**
+1. Fill password as `"Password1"` and confirm as `"Password2"`.
+2. Submit.
+
+**Expected:** Confirm password error is shown.
+
+---
+
+### TC-15-06 — Successful signup shows animation and redirects to profile
+
+**Preconditions:** Using a unique email not already registered.
+**Steps:**
+1. Fill all signup fields correctly, including a valid BR or US ZIP.
+2. Submit.
+
+**Expected:** A success overlay animation appears, then the user is redirected to the profile page.
+
+---
+
+### TC-15-07 — Login with valid credentials redirects to shop
+
+**Preconditions:** An account exists (seed user or one created in TC-15-06).
+**Steps:**
+1. Navigate to the login page.
+2. Fill email and password correctly. Submit.
+
+**Expected:** Login succeeds and the shop (`[data-testid="product-grid"]`) is visible.
+
+---
+
+### TC-15-18 — Login clears any guest checkout form data
+
+**Preconditions:** Guest has navigated to checkout and filled name, email, and card fields.
+**Steps:**
+1. Fill the checkout form with guest data and navigate back to the menu.
+2. Log in with a valid account.
+3. Dismiss the reorder prompt if shown.
+4. Add a product to the cart and navigate to checkout.
+
+**Expected:** The name, email, and card name fields are all empty — no guest data carries over.
+
+---
+
+### TC-15-08 — Login hydrates the saved user location
+
+**Preconditions:** Authenticated user with a saved location.
+**Steps:**
+1. Log in.
+2. Assert `[data-testid="location-summary"]` is visible in the header.
+
+**Expected:** The user's saved delivery location is restored after login.
+
+---
+
+### TC-15-09 — Authenticated user's profile icon opens the profile page
+
+**Preconditions:** User is logged in.
+**Steps:**
+1. Click the profile icon in the header.
+
+**Expected:** The profile page is shown.
+
+---
+
+### TC-15-10 — Guest profile icon click redirects to login
+
+**Preconditions:** Fresh session (not logged in).
+**Steps:**
+1. Click the profile icon in the header.
+
+**Expected:** The login page is shown.
+
+---
+
+### TC-15-11 — Profile "Account Details" tab shows the user's data
+
+**Preconditions:** Logged-in user.
+**Steps:**
+1. Open profile.
+2. Assert the Account Details tab contains the user's name and email.
+
+**Expected:** Profile fields are pre-filled with the authenticated user's data.
+
+---
+
+### TC-15-12 — Previous orders tab shows order history for authenticated user
+
+**Preconditions:** Authenticated user with at least one placed order.
+**Steps:**
+1. Open profile, navigate to "Previous Orders" tab.
+2. Assert at least one order entry is visible.
+
+**Expected:** Previous orders are listed.
+
+---
+
+### TC-15-13 — Reorder from previous orders adds items to the cart
+
+**Preconditions:** Authenticated user with a previous order.
+**Steps:**
+1. Open a previous order modal.
+2. Click the reorder button.
+3. Open the cart drawer.
+
+**Expected:** The cart contains the same products from the previous order.
+
+---
+
+### TC-15-14 — Reorder prompt is shown on the shop page for returning authenticated users
+
+**Preconditions:** Authenticated user with at least one previous order.
+**Steps:**
+1. Log in and navigate to the shop.
+2. Assert the reorder prompt is visible.
+3. Assert the prompt contains the text `"Feeling hungry? Reorder your favorite combo!"` (en-US) or `"Com fome? Peca seu combo favorito de novo!"` (pt-BR).
+
+**Expected:** Reorder prompt is displayed with the correct localized text.
+
+---
+
+### TC-15-15 — Logout clears session and returns to guest workflow
+
+**Preconditions:** Authenticated user on the shop page.
+**Steps:**
+1. Open profile, click logout.
+2. Assert the product grid is visible.
+3. Click the profile icon in the header.
+
+**Expected:** After logout the shop is shown, and clicking the profile icon routes to the login page (guest workflow restored).
+
+---
+
+## Supplement — Additional rules not covered in original suites
+
+---
+
+### TC-S01 — Product card displays calories
+
+> Covers §1.2 (`caloriesKcal` is displayed on product cards).
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Navigate to `/`.
+2. Pick any product card and assert it contains a calories value (e.g. text matching `\d+ kcal` or a `data-testid="product-calories"` element).
+
+**Expected:** Each card shows the caloric value.
+
+---
+
+### TC-S02 — Header brand shows "BeeTee's" and tagline
+
+> Covers §2.1.
+
+**Preconditions:** Fresh session.
+**Steps:**
+1. Navigate to `/`.
+2. Assert the header contains the text `"BeeTee's"`.
+3. Assert the header contains the tagline `"the best of both worlds"`.
+
+**Expected:** Both brand name and tagline are visible.
+
+---
+
+### TC-S03 — ZIP auto-lookup triggers on blur when BR ZIP reaches 8 digits
+
+> Covers §4.6 (blur trigger).
+
+**Preconditions:** Location panel open; country set to BR.
+**Steps:**
+1. Type 7 digits into `[data-testid="location-zip"]` and tab away — assert no lookup started.
+2. Type the 8th digit and tab away — assert the address fields begin to populate (or the lookup progress indicator appears).
+
+**Expected:** Lookup triggers automatically on blur when exactly 8 digits are present.
+
+---
+
+### TC-S04 — ZIP auto-lookup triggers on blur when US ZIP reaches 5 digits
+
+> Covers §4.6 (blur trigger, US).
+
+**Preconditions:** Location panel open; country set to US.
+**Steps:**
+1. Type 4 digits into `[data-testid="location-zip"]` and tab away — assert no lookup started.
+2. Type the 5th digit and tab away — assert lookup starts.
+
+**Expected:** Lookup triggers automatically on blur when exactly 5 digits are present for US.
+
+---
+
+### TC-S05 — Save button stays disabled for 500 ms after lookup completes
+
+> Covers §4.7.
+
+**Preconditions:** Location panel open.
+**Steps:**
+1. Type a valid ZIP and click the lookup button.
+2. Immediately after the lookup progress disappears, assert `[data-testid="location-save"]` is still disabled.
+3. Wait 600 ms and assert the save button is now enabled.
+
+**Expected:** There is a brief 500 ms window after lookup where the save button remains disabled.
+
+---
+
+### TC-S06 — A US ZIP entered with BR country selected does not resolve to a BR store
+
+> Covers §3.3 (no cross-country matching).
+
+**Preconditions:** Location panel open; country selector set to BR.
+**Steps:**
+1. Enter a US ZIP (`10001`) while the country is set to `BR`.
+2. Click lookup.
+3. Assert `[data-testid="location-store-status"]` does NOT contain any BeeTee's store name.
+
+**Expected:** No store is resolved; the "We don't deliver to this city yet" message appears.
+
+---
+
+### TC-S07 — US ZIP+4 is accepted and normalized to 5 digits for lookup
+
+> Covers §12.3 (postal code normalization).
+
+**Preconditions:** Location panel open; country set to US.
+**Steps:**
+1. Type `"10001-1234"` into `[data-testid="location-zip"]`.
+2. Click lookup.
+3. Assert that address fields populate correctly (same result as entering `"10001"`).
+
+**Expected:** ZIP+4 format resolves correctly; the store for New York is matched.
+
+---
+
+### TC-S08 — Navigating to shop via header logo clears checkout validation errors
+
+> Covers §11.2.
+
+**Preconditions:** Location saved; item in cart; on checkout page with validation errors visible (submit empty form).
+**Steps:**
+1. Submit the empty checkout form to trigger errors.
+2. Assert `[data-testid="checkout-error-fullName"]` is visible.
+3. Click the header logo / brand.
+4. Navigate back to checkout.
+
+**Expected:** After navigating away and returning, no stale error messages are displayed.
 
 ---
 

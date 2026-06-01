@@ -28,6 +28,7 @@ export function CheckoutPage() {
   const clearCart = useCartStore((s) => s.clear);
   const linesById = useCartStore((s) => s.linesById);
   const subtotal = useCartStore(selectSubtotal);
+  const cartIsEmpty = Object.keys(linesById).length === 0;
   const user = useAuthStore((s) => s.user);
   const setOrders = useAuthStore((s) => s.setOrders);
   const closeCart = useCartStore((s) => s.closeDrawer);
@@ -49,6 +50,7 @@ export function CheckoutPage() {
 
   const handleSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
+    if (cartIsEmpty) return;
     const result = validateCheckout(form, savedZip);
     if (!result.valid) {
       setErrors(result.errors);
@@ -120,6 +122,7 @@ export function CheckoutPage() {
             size="large"
             startIcon={<LockRoundedIcon />}
             data-testid="place-order"
+            disabled={cartIsEmpty}
             sx={{ alignSelf: { xs: "stretch", sm: "flex-end" }, px: 4 }}
           >
             {t("checkoutPlaceOrder")}

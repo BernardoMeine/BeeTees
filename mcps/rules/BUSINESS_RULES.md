@@ -370,8 +370,10 @@ Login requires email and password. On success:
 1. The server stores `userId` in the session.
 2. Any saved user location hydrates the delivery session.
 3. The frontend loads previous orders.
-4. A smooth success overlay appears before navigation.
-5. The user returns to the shop.
+4. The checkout form (name, email, card fields) is reset to its empty state so that
+   any previously entered guest data does not carry over to the authenticated session.
+5. A smooth success overlay appears before navigation.
+6. The user returns to the shop.
 
 ### 5.4 Signup success animation
 
@@ -562,7 +564,7 @@ invalid field receives focus.
 
 | Field | Rule |
 |---|---|
-| Full name | Must not be blank |
+| Full name | Must not be blank; may only contain letters (including accented), spaces, hyphens, and apostrophes |
 | Email | Must contain `@`, at least one character before it, and a domain containing `.` |
 | ZIP / postal code | Checkout ZIP or saved delivery ZIP must be non-empty |
 

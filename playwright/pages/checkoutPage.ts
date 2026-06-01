@@ -13,6 +13,9 @@ export class CheckoutPage {
   readonly cardCvc: Locator;
   readonly storeName: Locator;
   readonly placeOrder: Locator;
+  readonly paymentCard: Locator;
+  readonly paymentRestaurant: Locator;
+  readonly cardDetails: Locator;
 
   constructor(private readonly page: Page) {
     this.pageRoot = page.getByTestId("checkout-page");
@@ -26,6 +29,9 @@ export class CheckoutPage {
     this.cardCvc = page.getByTestId("checkout-card-cvc");
     this.storeName = page.getByTestId("checkout-store-name");
     this.placeOrder = page.getByTestId("place-order");
+    this.paymentCard = page.getByTestId("payment-card");
+    this.paymentRestaurant = page.getByTestId("payment-restaurant");
+    this.cardDetails = page.getByTestId("card-details");
   }
 
   error(field: string): Locator {
@@ -66,6 +72,11 @@ export class CheckoutPage {
 
   async placeOrderNow(): Promise<void> {
     await this.placeOrder.click();
+  }
+
+  async selectPaymentMethod(method: "card" | "pay-in-restaurant"): Promise<void> {
+    const radio = method === "card" ? this.paymentCard : this.paymentRestaurant;
+    await radio.click();
   }
 
   async goBackToShop(): Promise<void> {

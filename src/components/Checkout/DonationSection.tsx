@@ -17,7 +17,7 @@ import {
 } from "../../stores/checkoutStore";
 import { formatPrice, fromDisplayPrice, t } from "../../i18n/locale";
 
-export function DonationSection() {
+export function DonationSection({ disabled = false }: { disabled?: boolean }) {
   const f = useCheckoutStore((s) => s.form);
   const setField = useCheckoutStore((s) => s.setField);
 
@@ -92,6 +92,7 @@ export function DonationSection() {
                   : null
               }
               exclusive
+              disabled={disabled}
               aria-label={t("checkoutDonationFixed")}
             >
               {DONATION_FIXED_OPTIONS.map((amt) => (
@@ -115,6 +116,7 @@ export function DonationSection() {
               placeholder={t("checkoutDonationCustom")}
               value={f.donationCustomFixed}
               onChange={(e) => handleCustomChange("fixed", e.target.value)}
+              disabled={disabled}
               aria-label={`${t("checkoutDonationFixed")} — ${t("checkoutDonationCustom")}`}
               fullWidth={false}
               slotProps={{
@@ -150,6 +152,7 @@ export function DonationSection() {
                   : null
               }
               exclusive
+              disabled={disabled}
               aria-label={t("checkoutDonationPercent")}
             >
               {DONATION_PERCENT_OPTIONS.map((pct) => (
@@ -173,6 +176,7 @@ export function DonationSection() {
               placeholder={t("checkoutDonationCustom")}
               value={f.donationCustomPercent}
               onChange={(e) => handleCustomChange("percent", e.target.value)}
+              disabled={disabled}
               aria-label={`${t("checkoutDonationPercent")} — ${t("checkoutDonationCustom")}`}
               fullWidth={false}
               slotProps={{
@@ -199,6 +203,7 @@ export function DonationSection() {
         color="inherit"
         size="small"
         onClick={setNone}
+        disabled={disabled}
         data-action="set-donation"
         data-donation-type="none"
         data-testid="donation-none"

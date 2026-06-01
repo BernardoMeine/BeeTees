@@ -15,6 +15,7 @@ import PersonOffRoundedIcon from "@mui/icons-material/PersonOffRounded";
 import { fetchPreviousOrders, loginUser } from "../../api/authApi";
 import { setLocale, t } from "../../i18n/locale";
 import { useAuthStore } from "../../stores/authStore";
+import { useCheckoutStore } from "../../stores/checkoutStore";
 import { useLocationStore } from "../../stores/locationStore";
 import { useUiStore } from "../../stores/uiStore";
 import { AuthSuccessOverlay } from "./AuthSuccessOverlay";
@@ -28,6 +29,7 @@ export function LoginPage() {
   const [successOpen, setSuccessOpen] = useState(false);
   const setUser = useAuthStore((s) => s.setUser);
   const setOrders = useAuthStore((s) => s.setOrders);
+  const resetCheckout = useCheckoutStore((s) => s.resetForm);
   const setDeliveryFromServer = useLocationStore((s) => s.setDeliveryFromServer);
   const setView = useUiStore((s) => s.setView);
   const bumpLocaleVersion = useUiStore((s) => s.bumpLocaleVersion);
@@ -39,6 +41,7 @@ export function LoginPage() {
     try {
       const user = await loginUser(email.trim(), password);
       setUser(user);
+      resetCheckout();
       if (user.location) {
         setLocale(user.location.countryCode);
         setDeliveryFromServer(user.location);

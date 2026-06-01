@@ -18,7 +18,7 @@ function isValidEmail(s: string): boolean {
 }
 
 /** Only letters (including accented), spaces, hyphens, and apostrophes. */
-function isValidCardName(s: string): boolean {
+function isValidPersonName(s: string): boolean {
   const trimmed = s.trim();
   if (!trimmed) {
     return false;
@@ -72,6 +72,8 @@ export function validateCheckout(
 
   if (!f.fullName.trim()) {
     errors.fullName = t("checkoutErrorNameRequired");
+  } else if (!isValidPersonName(f.fullName)) {
+    errors.fullName = t("checkoutErrorNameInvalid");
   }
   if (!f.email.trim()) {
     errors.email = t("checkoutErrorEmailRequired");
@@ -87,7 +89,7 @@ export function validateCheckout(
   if (f.paymentMethod === "card") {
     if (!f.cardNameOnCard.trim()) {
       errors.cardNameOnCard = t("checkoutErrorCardNameRequired");
-    } else if (!isValidCardName(f.cardNameOnCard)) {
+    } else if (!isValidPersonName(f.cardNameOnCard)) {
       errors.cardNameOnCard = t("checkoutErrorCardNameInvalid");
     }
 

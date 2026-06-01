@@ -30,6 +30,7 @@ export function OrderSummary() {
   const f = useCheckoutStore((s) => s.form);
   const setField = useCheckoutStore((s) => s.setField);
 
+  const cartIsEmpty = lines.length === 0;
   const tipAmount = (subtotal * f.tipPercent) / 100;
   const donationAmount =
     f.donationType === "fixed"
@@ -100,6 +101,7 @@ export function OrderSummary() {
           size="small"
           value={f.tipPercent}
           exclusive
+          disabled={cartIsEmpty}
           onChange={(_, value) => {
             if (value !== null) {
               setField("tipPercent", value as TipPercent);
@@ -121,7 +123,7 @@ export function OrderSummary() {
         </ToggleButtonGroup>
       </Box>
 
-      <DonationSection />
+      <DonationSection disabled={cartIsEmpty} />
 
       <Divider sx={{ my: 2 }} />
 
